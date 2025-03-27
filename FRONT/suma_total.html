@@ -1,0 +1,102 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Suma Total de Consumos por Fecha</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+
+</head>
+
+<body>
+
+    <h1> Suma Total de Consumos por Fecha</h1>
+    <canvas id="grafico-suma-total"></canvas> 
+
+    <script>
+
+        async function cargarSumaTotalPorFecha () {
+
+            const respuesta = await fetch ('http://127.0.0.1:5001/api/consumo/suma_totales_por_fecha');
+            const datos = await respuesta.json ();
+            const ctx = document.getElementById ('grafico-suma-total').getContext ('2d');
+
+            new Chart (ctx, {
+
+                type: 'line', 
+
+                data: {
+
+                    labels: datos.fechas, 
+
+                    datasets: [{
+
+                        label: 'Suma Total de Consumos (kWh)',
+                        data: datos.consumos, 
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderWidth: 1,
+                        fill: true
+
+                    }]
+                },
+
+                options: {
+
+                    responsive: true,
+                    plugins: {
+
+                        title: {
+
+                            display: true,
+                            text: 'Suma Total de Consumos por Fecha'
+
+                        }
+
+                    },
+
+                    scales: {
+
+                        x: {
+
+                            title: {
+
+                                display: true,
+                                text: 'Fecha'
+
+                            }
+
+                        },
+
+                        y: {
+
+                            title: {
+
+                                display: true,
+                                text: 'Consumo Total (kWh)'
+
+                            },
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        }
+
+        cargarSumaTotalPorFecha ();
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,113 @@
+
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Consumo por Sistema</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+
+</head>
+
+<body>
+
+    <h1> Consumo Energético por Sistema</h1>
+    <div id="graficos-container"></div> 
+    <a href="suma_total.html"> Ver Gráfico de Suma Total por Fecha</a>
+
+    <script>
+
+        async function cargarDatos () {
+
+            const respuesta = await fetch ('http://127.0.0.1:5001/api/consumo/sistema');
+            const datos = await respuesta.json ();
+            const container = document.getElementById ('graficos-container');
+
+            Object.keys (datos).forEach (sistema => {
+      
+                const canvas = document.createElement ('canvas');
+                canvas.id = `grafico-$ {sistema}`;
+                container.appendChild (canvas);
+                const ctx = canvas.getContext ('2d');
+
+                new Chart (ctx, {
+
+                    type: 'line', 
+
+                    data: {
+
+                        labels: datos [sistema].fechas, 
+
+                        datasets: [{
+
+                            label: `Consumo (${sistema})`,
+                            data: datos[sistema].consumos, 
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderWidth: 1,
+                            fill: true
+
+                        }]
+
+                    },
+
+                    options: {
+
+                        responsive: true,
+
+                        plugins: {
+
+                            title: {
+
+                                display: true,
+                                text: `Consumo Energético - ${sistema}`
+
+                            }
+                        },
+
+                        scales: {
+
+                            x: {
+
+                                title: {
+
+                                    display: true,
+                                    text: 'Fecha'
+
+                                }
+
+                            },
+
+                            y: {
+
+                                title: {
+
+                                    display: true,
+                                    text: 'Consumo (kWh)'
+
+                                },
+
+                                beginAtZero: true
+
+                            }
+
+                        }
+
+                    }
+
+                });
+
+            });
+
+        }
+
+        cargarDatos ();
+
+    </script>
+
+</body>
+
+</html>
