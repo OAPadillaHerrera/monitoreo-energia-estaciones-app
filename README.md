@@ -2,7 +2,7 @@
 
 ⚡ **Sistema de Monitoreo de Consumo Energético**
 
-📆 **Periodo:** Marzo 2025 - En desarrollo
+📆 **Periodo:** Septiembre 2024 - En desarrollo
 
 🚀 **Descripción**
 Este proyecto es una aplicación web para monitorear el consumo energético por sistema y visualizar la suma total de consumos por fecha. Permite a los usuarios analizar datos en tiempo real mediante gráficos interactivos generados con Chart.js.
