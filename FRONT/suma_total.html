@@ -21,7 +21,7 @@
 
         async function cargarSumaTotalPorFecha () {
 
-            const respuesta = await fetch ('http://127.0.0.1:5001/api/consumo/suma_totales_por_fecha');
+            const respuesta = await fetch ('http://127.0.0.1:5001/api/totales/suma_totales_por_fecha');
             const datos = await respuesta.json ();
             const ctx = document.getElementById ('grafico-suma-total').getContext ('2d');
 

@@ -5,199 +5,163 @@ import pandas as pd
 import numpy as np
 from db import conectar_db
 
-analytics_bp = Blueprint ('analytics', __name__)
+analytics_bp = Blueprint('analytics', __name__)
 
-def obtener_datos_filtrados (conexion):
+def obtener_datos_filtrados(conexion):
     query = "SELECT sistema, consumo, fecha FROM consumo_energetico"
-    df = pd.read_sql (query, conexion)
+    df = pd.read_sql(query, conexion)
     return df
 
-@analytics_bp.route ('/promedio', methods = ['GET'])
-
-def consumo_promedio ():
-
-    start = request.args.get ('start')
-    end = request.args.get ('end')
-    conexion = conectar_db ()
+@analytics_bp.route('/promedio', methods=['GET'])
+def consumo_promedio():
+    start = request.args.get('start')
+    end = request.args.get('end')
+    conexion = conectar_db()
 
     if conexion:
-
         try:
+            df = obtener_datos_filtrados(conexion)
+            df['fecha'] = pd.to_datetime(df['fecha'], errors='coerce')
 
-            df = obtener_datos_filtrados (conexion, start, end)
-            df ['consumo'] = pd.to_numeric (df ['consumo'], errors = 'coerce').fillna (0) 
+            if start and end:
+                df = df[(df['fecha'] >= start) & (df['fecha'] <= end)]
 
-            promedio_por_sistema = df.groupby ('sistema')['consumo'].apply (np.mean)
+            df['consumo'] = pd.to_numeric(df['consumo'], errors='coerce').fillna(0)
+            promedio_por_sistema = df.groupby('sistema')['consumo'].mean()
 
-            return jsonify ({
-
-                "consumo_promedio_por_sistema": promedio_por_sistema.to_dict ()
-
+            return jsonify({
+                "consumo_promedio_por_sistema": promedio_por_sistema.to_dict()
             }), 200
-        
         finally:
+            conexion.close()
 
-            conexion.close ()
-
-@analytics_bp.route ('/max_min', methods = ['GET'])
-
-def consumo_max_min ():
-
-    start = request.args.get ('start')
-    end = request.args.get ('end')
-    conexion = conectar_db ()
+@analytics_bp.route('/max_min', methods=['GET'])
+def consumo_max_min():
+    start = request.args.get('start')
+    end = request.args.get('end')
+    conexion = conectar_db()
 
     if conexion:
-
         try:
+            df = obtener_datos_filtrados(conexion)
+            df['fecha'] = pd.to_datetime(df['fecha'], errors='coerce')
 
-            df = obtener_datos_filtrados (conexion, start, end)
-            df ['consumo'] = pd.to_numeric (df ['consumo'], errors = 'coerce').fillna (0)  
+            if start and end:
+                df = df[(df['fecha'] >= start) & (df['fecha'] <= end)]
 
-            max_min_por_sistema = df.groupby ('sistema') ['consumo'].agg (max = np.max, min = np.min)
+            df['consumo'] = pd.to_numeric(df['consumo'], errors='coerce').fillna(0)
+            max_min_por_sistema = df.groupby('sistema')['consumo'].agg(max=np.max, min=np.min)
 
-            return jsonify ({
-
-                "max_min_por_sistema": max_min_por_sistema.to_dict (orient='index')
-
+            return jsonify({
+                "max_min_por_sistema": max_min_por_sistema.to_dict(orient='index')
             }), 200
-        
         finally:
+            conexion.close()
 
-            conexion.close ()
-
-@analytics_bp.route ('/total', methods = ['GET'])
-
-def consumo_total ():
-
-    start = request.args.get ('start')
-    end = request.args.get ('end')
-    conexion = conectar_db ()
+@analytics_bp.route('/total', methods=['GET'])
+def consumo_total():
+    start = request.args.get('start')
+    end = request.args.get('end')
+    conexion = conectar_db()
 
     if conexion:
-
         try:
+            df = obtener_datos_filtrados(conexion)
+            df['fecha'] = pd.to_datetime(df['fecha'], errors='coerce')
 
-            df = obtener_datos_filtrados (conexion, start, end)            
-            df ['consumo'] = pd.to_numeric (df ['consumo'], errors = 'coerce').fillna (0) 
+            if start and end:
+                df = df[(df['fecha'] >= start) & (df['fecha'] <= end)]
 
-            total_por_sistema = df.groupby ('sistema')['consumo'].apply (np.sum)
+            df['consumo'] = pd.to_numeric(df['consumo'], errors='coerce').fillna(0)
+            total_por_sistema = df.groupby('sistema')['consumo'].sum()
 
-            return jsonify ({
-
-                "consumo_total_por_sistema": total_por_sistema.to_dict ()
-
+            return jsonify({
+                "consumo_total_por_sistema": total_por_sistema.to_dict()
             }), 200
-        
         finally:
+            conexion.close()
 
-            conexion.close ()
-
-@analytics_bp.route ('/picos', methods = ['GET'])
-
-def deteccion_picos ():
-
-    start = request.args.get ('start')
-    end = request.args.get ('end')
-    conexion = conectar_db ()
+@analytics_bp.route('/picos', methods=['GET'])
+def deteccion_picos():
+    start = request.args.get('start')
+    end = request.args.get('end')
+    conexion = conectar_db()
 
     if conexion:
-
         try:
+            df = obtener_datos_filtrados(conexion)
+            df['fecha'] = pd.to_datetime(df['fecha'], errors='coerce')
 
-            df = obtener_datos_filtrados (conexion, start, end)
-            df ['consumo'] = pd.to_numeric (df ['consumo'], errors = 'coerce').fillna (0)  
+            if start and end:
+                df = df[(df['fecha'] >= start) & (df['fecha'] <= end)]
 
+            df['consumo'] = pd.to_numeric(df['consumo'], errors='coerce').fillna(0)
             picos_por_sistema = {}
 
-            for sistema, datos in df.groupby ('sistema'):
+            for sistema, datos in df.groupby('sistema'):
+                umbral = np.percentile(datos['consumo'], 95)
+                picos_por_sistema[sistema] = datos[datos['consumo'] > umbral].to_dict(orient='records')
 
-                umbral = np.percentile (datos ['consumo'], 95)
-
-                picos_por_sistema [sistema] = datos [datos ['consumo'] > umbral].to_dict (orient='records')
-
-            return jsonify ({
-
+            return jsonify({
                 "picos_por_sistema": picos_por_sistema
-
             }), 200
-        
         finally:
+            conexion.close()
 
-            conexion.close ()
-
-@analytics_bp.route ('/promedio_movil', methods = ['GET'])
-
-def promedio_movil ():
-
-    start = request.args.get ('start')
-    end = request.args.get ('end')
-    conexion = conectar_db ()
+@analytics_bp.route('/promedio_movil', methods=['GET'])
+def promedio_movil():
+    start = request.args.get('start')
+    end = request.args.get('end')
+    conexion = conectar_db()
 
     if conexion:
-
         try:
-            
-            df = obtener_datos_filtrados(conexion, start, end)         
-            df ['fecha'] = pd.to_datetime (df ['fecha'])
-            df.set_index ('fecha', inplace = True)
-            df = df.sort_index ()  
-            
+            df = obtener_datos_filtrados(conexion)
+            df['fecha'] = pd.to_datetime(df['fecha'], errors='coerce')
+
+            if start and end:
+                df = df[(df['fecha'] >= start) & (df['fecha'] <= end)]
+
+            df.set_index('fecha', inplace=True)
+            df = df.sort_index()
             promedio_movil_por_sistema = {}
-           
-            for sistema, grupo in df.groupby ('sistema'):
-                promedio_movil = grupo ['consumo'].rolling ('24H').mean ().dropna ()
+
+            for sistema, grupo in df.groupby('sistema'):
+                promedio_movil = grupo['consumo'].rolling('24H').mean().dropna()
                 promedio_movil_por_sistema[sistema] = promedio_movil.tolist()
 
-            return jsonify ({
-
+            return jsonify({
                 "promedio_movil_por_sistema": promedio_movil_por_sistema
-
             }), 200
-        
         finally:
+            conexion.close()
 
-            conexion.close ()
-
-@analytics_bp.route ('/sistema', methods = ['GET'])
-
-def consumo_por_sistema ():
-
-    conexion = conectar_db ()
+@analytics_bp.route('/sistema', methods=['GET'])
+def consumo_por_sistema():
+    conexion = conectar_db()
 
     if conexion:
-
         try:
-          
             query = """
-
                 SELECT sistema, consumo, fecha
                 FROM consumo_energetico
                 ORDER BY fecha ASC;
-
             """
-
-            df = pd.read_sql (query, conexion)          
+            df = pd.read_sql(query, conexion)
             datos_por_sistema = {}
 
-            for sistema, grupo in df.groupby ('sistema'):
-
-                datos_por_sistema [sistema] = {
-
-                    "fechas": grupo ['fecha'].astype (str).tolist (), 
-                    "consumos": grupo ['consumo'].tolist ()
+            for sistema, grupo in df.groupby('sistema'):
+                datos_por_sistema[sistema] = {
+                    "fechas": grupo['fecha'].astype(str).tolist(),
+                    "consumos": grupo['consumo'].tolist()
                 }
 
-            return jsonify (datos_por_sistema), 200
-        
+            return jsonify(datos_por_sistema), 200
         except Exception as error:
-
-            print (f"Error al obtener datos: {error}")
-            return jsonify ( {"mensaje": "Error al procesar datos"}), 500
-        
+            print(f"Error al obtener datos: {error}")
+            return jsonify({"mensaje": "Error al procesar datos"}), 500
         finally:
-
-            conexion.close ()
+            conexion.close()
 
 
 

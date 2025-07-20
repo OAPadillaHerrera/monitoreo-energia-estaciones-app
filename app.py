@@ -11,7 +11,7 @@ CORS (app)
 
 app.register_blueprint (simulacion_bp, url_prefix = '/simulacion')
 app.register_blueprint (analytics_bp, url_prefix = '/api/consumo')
-app.register_blueprint (totales_bp, url_prefix = '/api/consumo')
+app.register_blueprint (totales_bp, url_prefix = '/api/totales')
 
 @app.route ('/')
 

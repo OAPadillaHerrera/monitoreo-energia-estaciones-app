@@ -14,7 +14,7 @@ async function createPythonContainer () {
 
             Env: [
 
-                'POSTGRES_HOST=localhost',
+                'POSTGRES_HOST=host.docker.internal',
                 'POSTGRES_DB=monitoreo',
                 'POSTGRES_USER=postgres',
                 'POSTGRES_PASSWORD=Opostgre2024'

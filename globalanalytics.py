@@ -5,11 +5,14 @@ import requests
 from db import conectar_db  
 import pandas as pd
 
-totales_bp = Blueprint ('totales', __name__)
+from flask import Blueprint, jsonify
+import requests
 
-def construir_url (endpoint):
+totales_bp = Blueprint ('totales', __name__)  
 
-    return f"http://localhost:5001/api/consumo/{endpoint}"
+def construir_url (endpoint):      
+    
+    return f"http://host.docker.internal:5001/api/consumo/{endpoint}"
 
 @totales_bp.route ('/total_promedio', methods = ['GET'])
 
@@ -17,6 +20,8 @@ def total_promedio ():
 
     url = construir_url ('promedio')
     response = requests.get (url)
+    print(f"URL construida: {url}")
+
     
     print (f"Response Status: {response.status_code}")
     print (f"Response Text: {response.text}") 
