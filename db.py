@@ -7,8 +7,7 @@ def conectar_db ():
     try:
 
         conexion = pg8000.connect (
-
-            host="host.docker.internal",  
+            host="host.docker.internal", 
             database="monitoreo",
             user="postgres",
             password="Opostgre2024"

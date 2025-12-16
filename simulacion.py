@@ -9,7 +9,18 @@ simulacion_bp = Blueprint ('simulacion', __name__)
 
 def generar_datos_simulados ():
 
-    sistemas = ['Bomba de Combustible', 'Refrigeración', 'Iluminación']
+    systems = [
+        'Price Display System (LED Modules)',
+        'Corporate Lighting System (LED Signage and Logo)',
+        'Canopy Lighting System (27 Lamps)',
+        'Perimeter Lighting System (5 Luminaires)',
+        'Air Conditioning System (Office and Server Room)',
+        'Customer Service Kiosk System',
+        'Submersible Pump System',
+        'Fuel Dispenser System (5 Units)',
+        'Office and General Services System'
+    ]
+
     datos = []
 
     for sistema in sistemas:

@@ -174,7 +174,6 @@ def consumo_por_sistema():
 
 
 
-
         
 
 
