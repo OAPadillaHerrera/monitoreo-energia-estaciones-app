@@ -1,85 +1,53 @@
 
 
 from flask import Blueprint, jsonify
-import random
 import datetime
-from db import conectar_db
 
 simulacion_bp = Blueprint ('simulacion', __name__)
 
-def generar_datos_simulados ():
+SYSTEMS_COMSUMPTION_PER_HOUR = {
+    "Price Display System (LED Modules)": 2.04,
+    "Corporate Lighting System (LED Signage and Logo)": 0.84,
+    "Canopy Lighting System (27 Lamps)": 2.052,
+    "Perimeter Lighting System (5 Luminaires)": 0.275,
+    "Office and General Services System": 1.1,    
+    "Submersible Pump System": 0.577,
+    "Fuel Dispenser System (5 Units)": 0.0375,
 
-    systems = [
-        'Price Display System (LED Modules)',
-        'Corporate Lighting System (LED Signage and Logo)',
-        'Canopy Lighting System (27 Lamps)',
-        'Perimeter Lighting System (5 Luminaires)',
-        'Air Conditioning System (Office and Server Room)',
-        'Customer Service Kiosk System',
-        'Submersible Pump System',
-        'Fuel Dispenser System (5 Units)',
-        'Office and General Services System'
-    ]
+    "Air Conditioning System": {
+        "Server Room": 0.184, # 24/7
+    },
 
-    datos = []
+    "Customer Service Kiosk System": {
+        "Refrigeration": 0.84, # 24/7
+    }
+}   
 
-    for sistema in sistemas:
+def generate_hourly_consumption(timestamp):   
+    data = []
 
-        consumo = round (random.uniform (10, 50), 2)
-        fecha = datetime.datetime.now ()
-        datos.append ((sistema, consumo, fecha))
+    for system, consumption in SYSTEMS_COMSUMPTION_PER_HOUR.items():
 
-    print (f"Datos generados: {datos}")
-    return datos
+        if isinstance(consumption, (int, float)):
+            data.append((system, consumption, timestamp ))
 
-def insertar_datos_en_db (datos):
-
-    conexion = conectar_db ()
-
-    if conexion:
-
-        try:
-
-            cursor = conexion.cursor ()
-            query = "INSERT INTO consumo_energetico (sistema, consumo, fecha) VALUES (%s, %s, %s)"
-            cursor.executemany (query, datos)
-            conexion.commit ()
-            print ("Datos insertados correctamente.")
-            return True
+        elif isinstance(consumption, dict):
+            for sub_system, sub_consumption, in consumption.items():
+                system_name = f"{system} - {sub_system}"
+                data.append((system_name, sub_consumption, timestamp ))
         
-        except Exception as error:
+    return data
 
-            print (f"Error al insertar datos: {error}")
-            return False
-        
-        finally:
+def generate_simulated_data():
+    timestamp = datetime.datetime.now()
+    data = generate_hourly_consumption(timestamp)
+    print(f"Generated data: {data}")
+    return data
 
-            cursor.close ()
-            conexion.close ()
-
-    else:
-
-        print ("Error al conectar. No se insertaron datos.")
-        return False
+#...............................................#
 
 @simulacion_bp.route ('/')
-
 def index ():
-
     return "ENERGY MONITORING SYSTEM WORKING CORRECTLY ..."
 
-@simulacion_bp.route ('/generar-datos', methods = ['POST'])
-
-def generar_datos ():
-
-    datos_simulados = generar_datos_simulados () 
-    exito = insertar_datos_en_db (datos_simulados)  
-
-    if exito:
-
-        return jsonify ({"mensaje": "Datos insertados correctamente"}), 200
-    
-    else:
-
-        return jsonify ({"mensaje": "Error al insertar datos"}), 500
 
