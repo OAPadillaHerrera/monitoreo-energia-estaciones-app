@@ -6,3 +6,4 @@ pg8000==1.29.2
 pandas
 numpy
 requests
+python-dotenv==1.0.0

@@ -18,12 +18,12 @@ SYSTEMS_CONSUMPTION_PER_HOUR = {
 
     "Canopy Lighting System (27 Lamps)": {
         "consumption": 2.052,
-        "schedule": "nightime"
+        "schedule": "nighttime"
         },
 
     "Perimeter Lighting System (5 Luminaires)": {
         "consumption": 0.275,
-        "schedule": "nightime"
+        "schedule": "nighttime"
         },
 
     "Office and General Services System": {
@@ -33,12 +33,14 @@ SYSTEMS_CONSUMPTION_PER_HOUR = {
 
     "Submersible Pump System": {
         "consumption": 0.577,
-        "schedule": "24_7"
+        "schedule": "24_7",
+        "duration_hours": 2.04
     },
 
     "Fuel Dispenser System (5 Units)": {
         "consumption": 0.0375,
-        "schedule": "24_7"
+        "schedule": "24_7",
+        "duration_hours": 2.05
     },
 
     "Air Conditioning System": {
@@ -92,14 +94,23 @@ def generate_hourly_consumption(timestamp):
 
         if "consumption" in config:
             if is_system_active(config["schedule"], timestamp):
-                data.append((system, config["consumption"], timestamp))
+
+                duration = config.get("duration_hours", 1)
+                real_consumption = config["consumption"] * duration
+
+                data.append((system, real_consumption, timestamp))
 
         else:
             for sub_system, sub_config in config.items():
                 if is_system_active(sub_config["schedule"], timestamp):
+
+                    duration = sub_config.get("duration_hours", 1)
+                    real_consumption = sub_config["consumption"] * duration
+
                     system_name = f"{system} - {sub_system}"
+
                     data.append(
-                        (system_name, sub_config["consumption"], timestamp)
+                        (system_name, real_consumption, timestamp)
                     )
         
     return data
@@ -116,6 +127,17 @@ def generate_daily_simulation():
 
     return daily_data
 
+def calculate_daily_totals (daily_data):
+    totals = {}
+
+    for system, consumption, _ in daily_data:
+        if system not in totals:
+            totals[system] = 0
+
+        totals[system] += consumption
+
+    return totals    
+
 def generate_simulated_data():
     timestamp = datetime.datetime.now()
     data = generate_hourly_consumption(timestamp)
@@ -125,6 +147,6 @@ def generate_simulated_data():
 
 @simulacion_bp.route ('/')
 def index ():
-    return "ENERGY MONITORING SYSTEM WORKING CORRECTLY ..."
+    return "Energy monitoring system working correctly."
 
 
