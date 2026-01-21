@@ -13,7 +13,7 @@ def conectar_db():
             database=os.getenv("DB_NAME"), 
             user=os.getenv("DB_USER"), 
             password=os.getenv("DB_PASSWORD"), 
-            port=int(os.getenv("DB_PORT"), )
+            port=int(os.getenv("DB_PORT"))
         )
 
         print("Database connection established successfully.")

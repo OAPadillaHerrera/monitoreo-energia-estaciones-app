@@ -1,9 +1,8 @@
 
 
-from flask import Blueprint, jsonify
 import datetime
 
-simulacion_bp = Blueprint ('simulacion', __name__)
+simulation_bp = Blueprint ('simulation', __name__)
 
 SYSTEMS_CONSUMPTION_PER_HOUR = {
     "Price Display System (LED Modules)": {
@@ -137,16 +136,3 @@ def calculate_daily_totals (daily_data):
         totals[system] += consumption
 
     return totals    
-
-def generate_simulated_data():
-    timestamp = datetime.datetime.now()
-    data = generate_hourly_consumption(timestamp)
-
-    print(f"Generated data: {data}")
-    return data
-
-@simulacion_bp.route ('/')
-def index ():
-    return "Energy monitoring system working correctly."
-
-
