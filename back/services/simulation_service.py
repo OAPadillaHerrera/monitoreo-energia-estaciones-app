@@ -2,8 +2,6 @@
 
 import datetime
 
-simulation_bp = Blueprint ('simulation', __name__)
-
 SYSTEMS_CONSUMPTION_PER_HOUR = {
     "Price Display System (LED Modules)": {
         "consumption": 2.04,
@@ -136,3 +134,5 @@ def calculate_daily_totals (daily_data):
         totals[system] += consumption
 
     return totals    
+
+

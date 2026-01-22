@@ -2,7 +2,7 @@
 
 from flask import Blueprint, jsonify
 import requests
-from db import conectar_db  
+from config.db import conectar_db  
 import pandas as pd
 
 from flask import Blueprint, jsonify

@@ -1,7 +1,7 @@
 
 
 from flask import Flask
-from simulation import simulation_bp
+from routes.simulation_routes import simulation_bp
 from analytics import analytics_bp
 from globalanalytics import totales_bp
 from flask_cors import CORS
@@ -17,7 +17,7 @@ app.register_blueprint (totales_bp, url_prefix = '/api/totales')
 
 def index ():
     
-    return "ENERGY MONITORING SYSTEM WORKING CORRECTLY ..."
+    return "Energy monitoring system working correcty."
 
 if __name__ == '__main__':
     app.run (host='0.0.0.0', port=5001, debug=True)

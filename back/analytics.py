@@ -3,7 +3,7 @@
 from flask import Blueprint, jsonify, request
 import pandas as pd
 import numpy as np
-from db import conectar_db
+from config.db import conectar_db
 
 analytics_bp = Blueprint('analytics', __name__)
 
