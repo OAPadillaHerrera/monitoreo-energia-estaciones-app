@@ -45,7 +45,7 @@ def daily_simulation():
 
     insert_hourly_consumption(hourly_records)
     
-    daily_records = build_daily_consumption_records
+    daily_records = build_daily_consumption_records (hourly_records)
 
     return jsonify({
         "status": "ok",
