@@ -2,7 +2,6 @@
 
 import datetime
 from flask import Blueprint, jsonify
-
 from services.simulation_service import generate_daily_simulation
 from repositories.system_repository import get_systems_map
 from repositories.consumption_repository import (

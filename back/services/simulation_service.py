@@ -10,7 +10,7 @@ SYSTEMS_CONSUMPTION_PER_HOUR = {
 
     "Corporate Lighting System (LED Signage and Logo)": {
         "consumption": 0.84,
-        "schedule": "24_7"
+        "schedule": "nighttime"
         },
 
     "Canopy Lighting System (27 Lamps)": {
@@ -25,33 +25,42 @@ SYSTEMS_CONSUMPTION_PER_HOUR = {
 
     "Office and General Services System": {
         "consumption": 1.1,
-        "schedule": "office_hours"
+        "schedule": "office_hours",
+        
     },  
 
     "Submersible Pump System": {
         "consumption": 0.577,
         "schedule": "24_7",
-        "duration_hours": 2.04
+        "duration_hours": 2.04 / 24
     },
 
     "Fuel Dispenser System (5 Units)": {
         "consumption": 0.0375,
         "schedule": "24_7",
-        "duration_hours": 2.05
+        "duration_hours": 2.05 / 24
     },
 
     "Air Conditioning System": {
         "Server Room": {
-            "consumption": 0.184,
+            "consumption": 0.09183,
             "schedule": "24_7"
+        },      
+        "Office Area": {
+            "consumption": 0.09183,
+            "schedule": "office_hours"
         }        
     },
 
     "Customer Service Kiosk System": {
          "Refrigeration": {
-            "consumption": 0.84,
+            "consumption": 0.125,
             "schedule": "24_7"
-        }     
+        },     
+         "Coffee Machine": {
+            "consumption": 0.5,
+            "schedule": "coffee_machine",
+        },  
     }
 }   
 
