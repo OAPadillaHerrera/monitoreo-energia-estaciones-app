@@ -3,61 +3,72 @@
 import datetime
 
 SYSTEMS_CONSUMPTION_PER_HOUR = {
-    "Price Display System (LED Modules)": {
+    "price_display_system": {
+        "description":"LED price display modules",
         "consumption": 2.04,
         "schedule": "24_7"
         },
 
-    "Corporate Lighting System (LED Signage and Logo)": {
+    "corporate_lighting_system": {
+        "description":"LED signage and corporate logo",
         "consumption": 0.84,
         "schedule": "nighttime"
         },
 
-    "Canopy Lighting System (27 Lamps)": {
+    "canopy_lighting_system": {
+        "description":"27 canopy lamps",
+        "units":27,        
         "consumption": 2.052,
         "schedule": "nighttime"
         },
 
-    "Perimeter Lighting System (5 Luminaires)": {
+    "perimeter_lighting_system": {
+        "description": "5 perimeter luminaires",
+        "units": 5,
         "consumption": 0.275,
         "schedule": "nighttime"
         },
 
-    "Office and General Services System": {
+    "office_and_general_services": {
         "consumption": 1.1,
         "schedule": "office_hours",
-        
     },  
 
-    "Submersible Pump System": {
+    "submersible_pump_system": {
+        "description": "3 submersible pumps",
+        "units": 3,
         "consumption": 0.577,
         "schedule": "24_7",
         "duration_hours": 2.04 / 24
     },
 
-    "Fuel Dispenser System (5 Units)": {
-        "consumption": 0.0375,
+    "fuel_dispenser_system": {
+        "description": "5 fuel dispensers",
+        "units": 5,
+        "consumption": 0.0275,
         "schedule": "24_7",
         "duration_hours": 2.05 / 24
     },
 
-    "Air Conditioning System": {
-        "Server Room": {
+    "air_conditioning_system": {
+        "server_room": {
             "consumption": 0.09183,
             "schedule": "24_7"
         },      
-        "Office Area": {
+        "office_area": {
             "consumption": 0.09183,
             "schedule": "office_hours"
         }        
     },
 
-    "Customer Service Kiosk System": {
-         "Refrigeration": {
+    "customer_service_kiosk_system": {
+         "refrigeration": {
+            "description": "3 beverage coolers",
+            "units": 3,
             "consumption": 0.125,
             "schedule": "24_7"
         },     
-         "Coffee Machine": {
+         "coffee_machine": {
             "consumption": 0.5,
             "schedule": "coffee_machine",
         },  
@@ -67,7 +78,7 @@ SYSTEMS_CONSUMPTION_PER_HOUR = {
 WORKING_SCHEDULES = {
     "24_7": {
         "days": [0, 1, 2, 3, 4, 5, 6],
-        "hours": range(0, 24),
+        "hours": list(range(0, 24)),
     },
 
     "office_hours": {
@@ -82,7 +93,7 @@ WORKING_SCHEDULES = {
 
     "coffee_machine": {
         "days": [0, 1, 2, 3, 4, 5, 6],
-        "hours": range(6, 7),
+        "hours": list(range(6, 7)),
     }
 }
 

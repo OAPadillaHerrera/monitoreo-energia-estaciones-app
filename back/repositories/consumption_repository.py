@@ -1,7 +1,6 @@
 
 
 from config.db import conectar_db
-import datetime
 
 def insert_hourly_consumption(records):
 
