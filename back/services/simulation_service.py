@@ -3,6 +3,7 @@
 import datetime
 
 from systems.coffee_machine import get_daily_coffee_machine_consumption
+from systems.price_display_system import get_hourly_price_display_consumption
 
 
 SYSTEMS_CONSUMPTION_PER_HOUR = {
@@ -116,13 +117,21 @@ def generate_hourly_consumption(timestamp):
 
             if is_system_active(config["schedule"], timestamp):
 
-                duration = config.get("duration_hours", 1)
-                real_consumption = config["consumption"] * duration
+                if system == "price_display_system":
+
+                    real_consumption = get_hourly_price_display_consumption()
+
+                else:
+
+                    duration = config.get("duration_hours", 1)
+                    real_consumption = config["consumption"] * duration
+
                 data.append((system, real_consumption, timestamp))
 
         else:
 
             for sub_system, sub_config in config.items():
+
                 if is_system_active(sub_config["schedule"], timestamp):
 
                     if sub_system == "coffee_machine":
@@ -135,7 +144,6 @@ def generate_hourly_consumption(timestamp):
                         real_consumption = sub_config["consumption"] * duration
 
                     system_name = f"{system} - {sub_system}"
-
                     data.append((system_name, real_consumption, timestamp))                    
         
     return data
