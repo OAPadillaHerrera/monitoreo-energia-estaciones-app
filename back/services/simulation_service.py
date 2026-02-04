@@ -8,6 +8,7 @@ from systems.corporate_lighting_system import get_hourly_corporate_lighting_cons
 from systems.canopy_lighting_system import get_hourly_canopy_lighting_consumption
 from systems.perimeter_lighting_system import get_hourly_perimeter_lighting_consumption
 from systems.office_and_general_services import get_hourly_office_and_general_services_consumption
+from systems.air_conditioning_system import get_hourly_air_conditioning_consumption
 
 
 SYSTEMS_CONSUMPTION_PER_HOUR = {
@@ -157,6 +158,14 @@ def generate_hourly_consumption(timestamp):
                     if sub_system == "coffee_machine":
                         
                         real_consumption = get_daily_coffee_machine_consumption()
+
+                    elif sub_system == "server_room":
+
+                        real_consumption = get_hourly_air_conditioning_consumption()
+
+                    elif sub_system == "office_area":    
+                        
+                        real_consumption = get_hourly_air_conditioning_consumption()
                         
                     else:
 
