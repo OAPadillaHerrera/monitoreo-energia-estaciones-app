@@ -7,6 +7,7 @@ from systems.price_display_system import get_hourly_price_display_consumption
 from systems.corporate_lighting_system import get_hourly_corporate_lighting_consumption
 from systems.canopy_lighting_system import get_hourly_canopy_lighting_consumption
 from systems.perimeter_lighting_system import get_hourly_perimeter_lighting_consumption
+from systems.office_and_general_services import get_hourly_office_and_general_services_consumption
 
 
 SYSTEMS_CONSUMPTION_PER_HOUR = {
@@ -135,6 +136,10 @@ def generate_hourly_consumption(timestamp):
                 elif system == "perimeter_lighting_system":
 
                     real_consumption = get_hourly_perimeter_lighting_consumption()
+
+                elif system == "office_and_general_services":
+
+                    real_consumption = get_hourly_office_and_general_services_consumption()
 
                 else:
 
