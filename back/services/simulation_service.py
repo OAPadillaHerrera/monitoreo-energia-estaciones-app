@@ -11,6 +11,7 @@ from systems.office_and_general_services import get_hourly_office_and_general_se
 from systems.air_conditioning_system import get_hourly_air_conditioning_consumption
 from systems.refrigeration import get_hourly_refrigeration_consumption
 from systems.submersible_pump_system import get_hourly_submersible_pump_system_consumption
+from systems.fuel_dispenser_system import get_hourly_fuel_dispenser_system_consumption
 
 
 SYSTEMS_CONSUMPTION_PER_HOUR = {
@@ -147,6 +148,12 @@ def generate_hourly_consumption(timestamp):
                 elif system == "submersible_pump_system":
 
                     real_consumption = get_hourly_submersible_pump_system_consumption()
+
+                elif system == "fuel_dispenser_system":
+
+                    real_consumption = get_hourly_fuel_dispenser_system_consumption()
+
+                
 
                 else:
 
