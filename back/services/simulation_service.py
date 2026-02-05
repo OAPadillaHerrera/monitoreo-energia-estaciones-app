@@ -2,7 +2,7 @@
 
 import datetime
 
-from systems.coffee_machine import get_daily_coffee_machine_consumption
+from systems.coffee_machine import get_hourly_coffee_machine_consumption
 from systems.price_display_system import get_hourly_price_display_consumption
 from systems.corporate_lighting_system import get_hourly_corporate_lighting_consumption
 from systems.canopy_lighting_system import get_hourly_canopy_lighting_consumption
@@ -170,7 +170,7 @@ def generate_hourly_consumption(timestamp):
 
                     if sub_system == "coffee_machine":
                         
-                        real_consumption = get_daily_coffee_machine_consumption()
+                        real_consumption = get_hourly_coffee_machine_consumption()
 
                     elif sub_system == "server_room":
 
