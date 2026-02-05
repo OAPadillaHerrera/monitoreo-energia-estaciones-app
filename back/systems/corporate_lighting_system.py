@@ -10,22 +10,11 @@ ANSI C84.1 Voltage Tolerance Standard (USA):
 https://voltage-disturbance.com/voltage-quality/voltage-tolerance-standard-ansi-c84-1/
 """
 
-import random
 
 CORPORATE_LIGHTING_NOMINAL_POWER_KWH = 0.84
 CORPORATE_LIGHTING_NOMINAL_VOLTAGE = 120
-CORPORATE_LIGHTING_MIN_VOLTAGE = 114
-CORPORATE_LIGHTING_MAX_VOLTAGE = 126
 
-
-def get_hourly_corporate_lighting_consumption():
-
-    voltage = random.uniform(
-
-        CORPORATE_LIGHTING_MIN_VOLTAGE,
-        CORPORATE_LIGHTING_MAX_VOLTAGE
-
-    )
+def get_hourly_corporate_lighting_consumption(voltage):
 
     real_consumption = (
 

@@ -12,7 +12,11 @@ from systems.air_conditioning_system import get_hourly_air_conditioning_consumpt
 from systems.refrigeration import get_hourly_refrigeration_consumption
 from systems.submersible_pump_system import get_hourly_submersible_pump_system_consumption
 from systems.fuel_dispenser_system import get_hourly_fuel_dispenser_system_consumption
+from electrical.voltage_profile import VoltageProfile
 
+
+voltage_profile = VoltageProfile()
+voltage_profile.generate_daily_profile()
 
 SYSTEMS_CONSUMPTION_PER_HOUR = {
     "price_display_system": {
@@ -119,6 +123,10 @@ def generate_hourly_consumption(timestamp):
 
     data = []
 
+    hour = timestamp.hour
+    voltage_120v = voltage_profile.get_voltage_120v(hour)
+    voltage_240v = voltage_profile.get_voltage_240v(hour)
+
     for system, config in SYSTEMS_CONSUMPTION_PER_HOUR.items():
 
         if "consumption" in config:
@@ -127,31 +135,31 @@ def generate_hourly_consumption(timestamp):
 
                 if system == "price_display_system":
 
-                    real_consumption = get_hourly_price_display_consumption()
+                    real_consumption = get_hourly_price_display_consumption(voltage_120v)
 
                 elif system == "corporate_lighting_system":
 
-                    real_consumption = get_hourly_corporate_lighting_consumption()
+                    real_consumption = get_hourly_corporate_lighting_consumption(voltage_120v)
 
                 elif system == "canopy_lighting_system":
 
-                    real_consumption = get_hourly_canopy_lighting_consumption()
+                    real_consumption = get_hourly_canopy_lighting_consumption(voltage_120v)
 
                 elif system == "perimeter_lighting_system":
 
-                    real_consumption = get_hourly_perimeter_lighting_consumption()
+                    real_consumption = get_hourly_perimeter_lighting_consumption(voltage_120v)
 
                 elif system == "office_and_general_services":
 
-                    real_consumption = get_hourly_office_and_general_services_consumption()
+                    real_consumption = get_hourly_office_and_general_services_consumption(voltage_120v)
 
                 elif system == "submersible_pump_system":
 
-                    real_consumption = get_hourly_submersible_pump_system_consumption()
+                    real_consumption = get_hourly_submersible_pump_system_consumption(voltage_240v)
 
                 elif system == "fuel_dispenser_system":
 
-                    real_consumption = get_hourly_fuel_dispenser_system_consumption()
+                    real_consumption = get_hourly_fuel_dispenser_system_consumption(voltage_240v)
 
                 
 
@@ -170,19 +178,19 @@ def generate_hourly_consumption(timestamp):
 
                     if sub_system == "coffee_machine":
                         
-                        real_consumption = get_hourly_coffee_machine_consumption()
+                        real_consumption = get_hourly_coffee_machine_consumption(voltage_120v)
 
                     elif sub_system == "server_room":
 
-                        real_consumption = get_hourly_air_conditioning_consumption()
+                        real_consumption = get_hourly_air_conditioning_consumption(voltage_120v)
 
                     elif sub_system == "office_area":    
                         
-                        real_consumption = get_hourly_air_conditioning_consumption()
+                        real_consumption = get_hourly_air_conditioning_consumption(voltage_120v)
 
                     elif sub_system == "refrigeration":
 
-                        real_consumption = get_hourly_refrigeration_consumption()
+                        real_consumption = get_hourly_refrigeration_consumption(voltage_120v)
                         
                     else:
 

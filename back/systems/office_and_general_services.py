@@ -10,22 +10,11 @@ ANSI C84.1 Voltage Tolerance Standard (USA):
 https://voltage-disturbance.com/voltage-quality/voltage-tolerance-standard-ansi-c84-1/
 """
 
-import random
 
 OFFICE_SERVICES_NOMINAL_POWER_KWH = 1.10
 OFFICE_SERVICES_NOMINAL_VOLTAGE = 120
-OFFICE_SERVICES_MIN_VOLTAGE = 114
-OFFICE_SERVICES_MAX_VOLTAGE = 126
 
-
-def get_hourly_office_and_general_services_consumption():
-
-    voltage = random.uniform(
-
-        OFFICE_SERVICES_MIN_VOLTAGE,
-        OFFICE_SERVICES_MAX_VOLTAGE
-
-    )
+def get_hourly_office_and_general_services_consumption(voltage):
 
     real_consumption = (
 

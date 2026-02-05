@@ -10,22 +10,11 @@ ANSI C84.1 Voltage Tolerance Standard (USA):
 https://voltage-disturbance.com/voltage-quality/voltage-tolerance-standard-ansi-c84-1/
 """
 
-import random
-
 SUBMERSIBLE_PUMP_SYSTEM_NOMINAL_POWER_KWH = 0.577
-SUBMERSIBLE_PUMP_SYSTEM_NOMINAL_VOLTAGE = 220
-SUBMERSIBLE_PUMP_SYSTEM_MIN_VOLTAGE = 209
-SUBMERSIBLE_PUMP_SYSTEM_MAX_VOLTAGE = 231
+SUBMERSIBLE_PUMP_SYSTEM_NOMINAL_VOLTAGE = 240
 SUBMERSIBLE_PUMP_SYSTEM_EQUIVALENT_HOURLY_DURATION = 2.04 / 24
 
-def get_hourly_submersible_pump_system_consumption():
-
-    voltage = random.uniform(
-
-        SUBMERSIBLE_PUMP_SYSTEM_MIN_VOLTAGE,
-        SUBMERSIBLE_PUMP_SYSTEM_MAX_VOLTAGE
-
-    )
+def get_hourly_submersible_pump_system_consumption(voltage):
 
     real_consumption = (
 

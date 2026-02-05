@@ -10,22 +10,11 @@ ANSI C84.1 Voltage Tolerance Standard (USA):
 https://voltage-disturbance.com/voltage-quality/voltage-tolerance-standard-ansi-c84-1/
 """
 
-import random
 
 REFRIGERATION_NOMINAL_POWER_KWH = 0.125
 REFRIGERATION_NOMINAL_VOLTAGE = 120
-REFRIGERATION_MIN_VOLTAGE = 114
-REFRIGERATION_MAX_VOLTAGE = 126
 
-
-def get_hourly_refrigeration_consumption():
-
-    voltage = random.uniform(
-
-        REFRIGERATION_MIN_VOLTAGE,
-        REFRIGERATION_MAX_VOLTAGE
-
-    )
+def get_hourly_refrigeration_consumption(voltage):
 
     real_consumption = (
 

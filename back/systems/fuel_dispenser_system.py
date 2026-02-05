@@ -10,23 +10,12 @@ ANSI C84.1 Voltage Tolerance Standard (USA):
 https://voltage-disturbance.com/voltage-quality/voltage-tolerance-standard-ansi-c84-1/
 """
 
-import random
 
 FUEL_DISPENSER_SYSTEM_NOMINAL_POWER_KWH = 0.0275
-FUEL_DISPENSER_SYSTEM_NOMINAL_VOLTAGE = 220
-FUEL_DISPENSER_SYSTEM_MIN_VOLTAGE = 209
-FUEL_DISPENSER_SYSTEM_MAX_VOLTAGE = 231
+FUEL_DISPENSER_SYSTEM_NOMINAL_VOLTAGE = 240
 FUEL_DISPENSER_SYSTEM_EQUIVALENT_HOURLY_DURATION = 2.05 / 24
 
-
-def get_hourly_fuel_dispenser_system_consumption():
-
-    voltage = random.uniform(
-
-        FUEL_DISPENSER_SYSTEM_MIN_VOLTAGE,
-        FUEL_DISPENSER_SYSTEM_MAX_VOLTAGE
-
-    )
+def get_hourly_fuel_dispenser_system_consumption(voltage):
 
     real_consumption = (
 
