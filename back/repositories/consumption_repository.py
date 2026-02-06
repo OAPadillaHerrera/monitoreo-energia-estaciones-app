@@ -27,23 +27,23 @@ def insert_hourly_consumption(records):
 
     print(f"{len(records)} hourly records inserted succesfully")
 
-def exists_hourly_consumption_for_date(date):
+def get_latest_consumption_date():
 
     connection = conectar_db()
     cursor = connection.cursor()
 
     query = """
-        SELECT 1
-        FROM hourly_consumption
-        WHERE DATE(timestamp) = %s
-        LIMIT 1;
+        SELECT MAX(DATE(timestamp))
+        FROM hourly_consumption;
     """
 
-    cursor.execute(query, (date,))
+    cursor.execute(query)
     result = cursor.fetchone()
 
     cursor.close()
     connection.close()
 
-    return result is not None
+    if result and result[0]:
+        return result[0]
 
+    return None

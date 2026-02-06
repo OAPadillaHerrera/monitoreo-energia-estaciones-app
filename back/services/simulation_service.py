@@ -15,9 +15,6 @@ from systems.fuel_dispenser_system import get_hourly_fuel_dispenser_system_consu
 from electrical.voltage_profile import VoltageProfile
 
 
-voltage_profile = VoltageProfile()
-voltage_profile.generate_daily_profile()
-
 SYSTEMS_CONSUMPTION_PER_HOUR = {
     "price_display_system": {
         "description":"LED price display modules",
@@ -119,7 +116,7 @@ def is_system_active(schedule_name, timestamp):
         and timestamp.hour in schedule["hours"]
     )
 
-def generate_hourly_consumption(timestamp):   
+def generate_hourly_consumption(timestamp, voltage_profile):   
 
     data = []
 
@@ -159,9 +156,7 @@ def generate_hourly_consumption(timestamp):
 
                 elif system == "fuel_dispenser_system":
 
-                    real_consumption = get_hourly_fuel_dispenser_system_consumption(voltage_240v)
-
-                
+                    real_consumption = get_hourly_fuel_dispenser_system_consumption(voltage_240v)                
 
                 else:
 
@@ -202,14 +197,21 @@ def generate_hourly_consumption(timestamp):
         
     return data
 
-def generate_daily_simulation():
-    base_time = datetime.datetime.now().replace(minute=0, second=0)
+def generate_daily_simulation(simulation_date):
+
+    voltage_profile = VoltageProfile()
+    voltage_profile.generate_daily_profile()
+
+    base_time = datetime.datetime.combine(
+        simulation_date,
+        datetime.time.min
+    )
 
     daily_data = []
 
     for hour in range(24):
         timestamp = base_time.replace(hour=hour)
-        hourly_data = generate_hourly_consumption(timestamp)
+        hourly_data = generate_hourly_consumption(timestamp, voltage_profile)
         daily_data.extend(hourly_data)
 
     return daily_data
