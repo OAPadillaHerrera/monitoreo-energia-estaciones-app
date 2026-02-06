@@ -128,7 +128,9 @@ def generate_hourly_consumption(timestamp, voltage_profile):
 
         if "consumption" in config:
 
-            if is_system_active(config["schedule"], timestamp):
+            is_active = is_system_active(config["schedule"], timestamp)
+
+            if is_active: 
 
                 if system == "price_display_system":
 
@@ -163,13 +165,19 @@ def generate_hourly_consumption(timestamp, voltage_profile):
                     duration = config.get("duration_hours", 1)
                     real_consumption = config["consumption"] * duration
 
-                data.append((system, real_consumption, timestamp))
+            else:
+                
+                real_consumption = 0.0
+
+            data.append((system, real_consumption, timestamp))
 
         else:
 
             for sub_system, sub_config in config.items():
 
-                if is_system_active(sub_config["schedule"], timestamp):
+                is_active = is_system_active(sub_config["schedule"], timestamp)
+
+                if is_active:
 
                     if sub_system == "coffee_machine":
                         
@@ -192,8 +200,13 @@ def generate_hourly_consumption(timestamp, voltage_profile):
                         duration = sub_config.get("duration_hours", 1)
                         real_consumption = sub_config["consumption"] * duration
 
-                    system_name = f"{system} - {sub_system}"
-                    data.append((system_name, real_consumption, timestamp))                    
+                else:
+
+                    real_consumption = 0.0
+
+                system_name = f"{system} - {sub_system}"
+
+                data.append((system_name, real_consumption, timestamp))                    
         
     return data
 
