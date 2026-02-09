@@ -13,7 +13,7 @@ from systems.refrigeration import get_hourly_refrigeration_consumption
 from systems.submersible_pump_system import get_hourly_submersible_pump_system_consumption
 from systems.fuel_dispenser_system import get_hourly_fuel_dispenser_system_consumption
 from electrical.voltage_profile import VoltageProfile
-
+from repositories.voltage_repository import insert_hourly_voltage
 
 SYSTEMS_CONSUMPTION_PER_HOUR = {
     "price_display_system": {
@@ -224,6 +224,20 @@ def generate_daily_simulation(simulation_date):
 
     for hour in range(24):
         timestamp = base_time.replace(hour=hour)
+        
+
+        #---------------------------------------------------#
+        voltage_120v = voltage_profile.get_voltage_120v(hour)
+        voltage_240v = voltage_profile.get_voltage_240v(hour)
+
+        insert_hourly_voltage(
+            timestamp=timestamp,
+            voltage_120v=voltage_120v,
+            voltage_240v=voltage_240v,
+            quality_flag="normal"
+        )
+        
+
         hourly_data = generate_hourly_consumption(timestamp, voltage_profile)
         daily_data.extend(hourly_data)
 
