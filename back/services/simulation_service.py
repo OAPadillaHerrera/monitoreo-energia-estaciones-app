@@ -213,7 +213,7 @@ def generate_hourly_consumption(timestamp, voltage_profile):
 def generate_daily_simulation(simulation_date):
 
     voltage_profile = VoltageProfile()
-    voltage_profile.generate_daily_profile()
+    voltage_profile.generate_daily_profile(simulation_date)
 
     base_time = datetime.datetime.combine(
         simulation_date,
@@ -223,10 +223,9 @@ def generate_daily_simulation(simulation_date):
     daily_data = []
 
     for hour in range(24):
+
         timestamp = base_time.replace(hour=hour)
         
-
-        #---------------------------------------------------#
         voltage_120v = voltage_profile.get_voltage_120v(hour)
         voltage_240v = voltage_profile.get_voltage_240v(hour)
 
@@ -237,7 +236,6 @@ def generate_daily_simulation(simulation_date):
             quality_flag="normal"
         )
         
-
         hourly_data = generate_hourly_consumption(timestamp, voltage_profile)
         daily_data.extend(hourly_data)
 
