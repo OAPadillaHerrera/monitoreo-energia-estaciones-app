@@ -229,11 +229,13 @@ def generate_daily_simulation(simulation_date):
         voltage_120v = voltage_profile.get_voltage_120v(hour)
         voltage_240v = voltage_profile.get_voltage_240v(hour)
 
+        quality_flag = voltage_profile.get_quality_flag(hour)
+
         insert_hourly_voltage(
             timestamp=timestamp,
             voltage_120v=voltage_120v,
             voltage_240v=voltage_240v,
-            quality_flag="normal"
+            quality_flag=quality_flag
         )
         
         hourly_data = generate_hourly_consumption(timestamp, voltage_profile)
