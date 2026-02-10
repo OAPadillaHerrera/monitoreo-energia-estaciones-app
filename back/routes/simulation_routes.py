@@ -9,28 +9,33 @@ from repositories.consumption_repository import (
     get_latest_consumption_date
 )
 from services.daily_consumption_service import build_daily_consumption_records
+from electrical.voltage_profile import VoltageProfile
 
 simulation_bp = Blueprint('simulation', __name__)
+voltage_profile = VoltageProfile()
 
 @simulation_bp.route('/')
+
 def index():
+
     return "Energy monitoring system working correctly."
 
 @simulation_bp.route('/daily', methods=['POST'])
+
 def daily_simulation():
 
     today = datetime.date.today()
-
     latest_date = get_latest_consumption_date()
 
     if latest_date:
+
         simulation_date = latest_date + datetime.timedelta(days=1)
+
     else:
         simulation_date = today
 
-    simulated_data = generate_daily_simulation(simulation_date)
+    simulated_data = generate_daily_simulation(simulation_date, voltage_profile)
     systems_map = get_systems_map()
-
     hourly_records = []
 
     for system_name, consumption, timestamp in simulated_data:
