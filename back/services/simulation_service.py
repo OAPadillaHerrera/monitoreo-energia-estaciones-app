@@ -153,11 +153,11 @@ def generate_hourly_consumption(timestamp, voltage_profile):
 
                 elif system == "submersible_pump_system":
 
-                    real_consumption = get_hourly_submersible_pump_system_consumption(voltage_240v)
+                    real_consumption = get_hourly_submersible_pump_system_consumption(voltage_240v, timestamp)
 
                 elif system == "fuel_dispenser_system":
 
-                    real_consumption = get_hourly_fuel_dispenser_system_consumption(voltage_240v)                
+                    real_consumption = get_hourly_fuel_dispenser_system_consumption(voltage_240v, timestamp)                
 
                 else:
 

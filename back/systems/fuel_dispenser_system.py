@@ -10,18 +10,31 @@ ANSI C84.1 Voltage Tolerance Standard (USA):
 https://voltage-disturbance.com/voltage-quality/voltage-tolerance-standard-ansi-c84-1/
 """
 
+from electrical.consumption_slots import get_slot_factor
 
 FUEL_DISPENSER_SYSTEM_NOMINAL_POWER_KWH = 0.0275
 FUEL_DISPENSER_SYSTEM_NOMINAL_VOLTAGE = 240
-FUEL_DISPENSER_SYSTEM_EQUIVALENT_HOURLY_DURATION = 2.05 / 24
+FUEL_DISPENSER_SYSTEM_EQUIVALENT_DAILY_HOURS = 2.05
 
-def get_hourly_fuel_dispenser_system_consumption(voltage):
+def get_hourly_fuel_dispenser_system_consumption(voltage, timestamp):
 
+    daily_energy = (
+        FUEL_DISPENSER_SYSTEM_NOMINAL_POWER_KWH
+        * FUEL_DISPENSER_SYSTEM_EQUIVALENT_DAILY_HOURS
+    )
+    
+    slot_factor = get_slot_factor("fuel_dispenser_system", timestamp)
+
+    if slot_factor is None:
+        raise RuntimeError(
+            f"Missing consumption slot for pumps at {timestamp}"
+        )
+    
     real_consumption = (
 
-        FUEL_DISPENSER_SYSTEM_NOMINAL_POWER_KWH
+        daily_energy
         * (voltage / FUEL_DISPENSER_SYSTEM_NOMINAL_VOLTAGE)
-        * FUEL_DISPENSER_SYSTEM_EQUIVALENT_HOURLY_DURATION
+        * slot_factor
         
     )
 
