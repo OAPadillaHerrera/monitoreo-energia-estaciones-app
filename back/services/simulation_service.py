@@ -224,6 +224,18 @@ def generate_daily_simulation(
 
     return daily_data
 
+def generate_range_simulation(start_date, end_date, voltage_profile, zero_event: MonthlyZeroConsumptionEvent):
+   
+    all_hourly_data = []
+
+    current_date = start_date
+    while current_date <= end_date:
+        daily_data = generate_daily_simulation(current_date, voltage_profile, zero_event)
+        all_hourly_data.extend(daily_data)
+        current_date += datetime.timedelta(days=1)
+
+    return all_hourly_data
+
 def calculate_daily_totals(daily_data):
     totals = {}
     for system, consumption, _ in daily_data:
