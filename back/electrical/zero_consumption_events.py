@@ -1,5 +1,6 @@
 
 
+
 import random
 import datetime
 
@@ -101,20 +102,28 @@ class MonthlyZeroConsumptionEvent:
             if system in EXCLUDED_SYSTEMS:
                 continue
 
-            if isinstance(config, dict) and "schedule" in config and "consumption" in config:
-                candidates.append((system, config["schedule"]))
+            if not isinstance(config, dict):
                 continue
 
-            if isinstance(config, dict):
-                for sub_system, sub_config in config.items():
-                    if not isinstance(sub_config, dict):
-                        continue
+            components = config.get("components")
+            if not isinstance(components, dict):
+                continue
 
-                    if "schedule" not in sub_config:
-                        continue
+            for sub_system, sub_config in components.items():
 
+                if not isinstance(sub_config, dict):
+                    continue
+
+                schedule = sub_config.get("schedule")
+                if not schedule:
+                    continue
+
+                if len(components) == 1:
+                    system_name = system
+                else:
                     system_name = f"{system} - {sub_system}"
-                    candidates.append((system_name, sub_config["schedule"]))
+
+                candidates.append((system_name, schedule))
 
         return candidates
 
@@ -189,7 +198,7 @@ class MonthlyZeroConsumptionEvent:
         return self.start <= timestamp < self.end
 
     def get_event_timestamps(self):
-       
+
         if not self.start or not self.end:
             return []
 
@@ -200,5 +209,3 @@ class MonthlyZeroConsumptionEvent:
             ts += datetime.timedelta(hours=1)
 
         return timestamps
-
-
