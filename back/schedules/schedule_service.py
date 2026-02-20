@@ -1,5 +1,6 @@
 
 
+import datetime
 from domain_config.systems_config import SYSTEMS_CONFIG
 from domain_config.working_schedules import WORKING_SCHEDULES
 
@@ -7,26 +8,36 @@ from domain_config.working_schedules import WORKING_SCHEDULES
 class ScheduleService:
 
     @staticmethod
-    def is_system_active(system_name: str, timestamp) -> bool:
-      
-        schedule_name = ScheduleService._get_schedule_for_system(system_name)
-        schedule = WORKING_SCHEDULES.get(schedule_name)
+    def get_all_system_names():
+        names = []
 
-        if not schedule:
-            raise ValueError(f"Schedule '{schedule_name}' not found.")
+        for system, config in SYSTEMS_CONFIG.items():
+            components = config["components"]
 
-        return (
-            timestamp.weekday() in schedule["days"]
-            and timestamp.hour in schedule["hours"]
-        )
+            if len(components) == 1:
+                names.append(system)
+            else:
+                for sub_system in components.keys():
+                    names.append(f"{system} - {sub_system}")
+
+        return names
 
     @staticmethod
-    def _get_schedule_for_system(system_name: str) -> str:
+    def get_schedule_for_system_name(system_name: str) -> str:
+        if " - " not in system_name:
+            components = SYSTEMS_CONFIG[system_name]["components"]
+            comp_config = next(iter(components.values()))
+            return comp_config["schedule"]
 
-        if " - " in system_name:
-            parent, component = system_name.split(" - ", 1)
-            return SYSTEMS_CONFIG[parent]["components"][component]["schedule"]
+        parent, child = system_name.split(" - ", 1)
+        return SYSTEMS_CONFIG[parent]["components"][child]["schedule"]
 
-        components = SYSTEMS_CONFIG[system_name]["components"]
-        component_config = next(iter(components.values()))
-        return component_config["schedule"]
+    @staticmethod
+    def is_system_active(schedule_name: str, timestamp: datetime.datetime) -> bool:
+        schedule = WORKING_SCHEDULES[schedule_name]
+        return timestamp.weekday() in schedule["days"] and timestamp.hour in schedule["hours"]
+
+    @staticmethod
+    def is_system_name_active(system_name: str, timestamp: datetime.datetime) -> bool:
+        schedule_name = ScheduleService.get_schedule_for_system_name(system_name)
+        return ScheduleService.is_system_active(schedule_name, timestamp)

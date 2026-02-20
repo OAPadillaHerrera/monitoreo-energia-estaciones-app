@@ -1,10 +1,15 @@
 
 
 import datetime
+import time
 from flask import Blueprint, jsonify, request
-from services.simulation_service import generate_daily_simulation
-from repositories.system_repository import get_systems_map
 
+from services.simulation_service import (
+    generate_daily_simulation,
+    generate_range_simulation
+)
+
+from repositories.system_repository import get_systems_map
 from repositories.consumption_repository import (
     insert_hourly_consumption,
     get_latest_consumption_date
@@ -13,6 +18,7 @@ from repositories.consumption_repository import (
 from services.daily_consumption_service import build_daily_consumption_records
 from electrical.voltage_profile import VoltageProfile
 from electrical.zero_consumption_events import MonthlyZeroConsumptionEvent
+
 
 simulation_bp = Blueprint('simulation', __name__)
 voltage_profile = VoltageProfile()
@@ -33,7 +39,7 @@ def daily_simulation():
     else:
         simulation_date = today
 
-    simulated_data = generate_daily_simulation(
+    daily_data, _, _ = generate_daily_simulation(
         simulation_date=simulation_date,
         voltage_profile=voltage_profile,
         zero_event=zero_event
@@ -42,12 +48,13 @@ def daily_simulation():
     systems_map = get_systems_map()
     hourly_records = []
 
-    for system_name, consumption, timestamp in simulated_data:
+    for system_name, consumption, timestamp in daily_data:
         system_id = systems_map.get(system_name)
         if system_id:
             hourly_records.append((system_id, timestamp, consumption))
 
     insert_hourly_consumption(hourly_records)
+
     daily_records = build_daily_consumption_records(hourly_records)
 
     return jsonify({
@@ -58,11 +65,13 @@ def daily_simulation():
         "daily_records_inserted": len(daily_records)
     }), 200
 
-
 @simulation_bp.route('/range', methods=['POST'])
 def range_simulation():
 
+    start_total = time.time()
+
     payload = request.get_json() or {}
+
     start_date = datetime.date.fromisoformat(payload["start_date"])
     end_date = datetime.date.fromisoformat(payload["end_date"])
 
@@ -85,28 +94,32 @@ def range_simulation():
             "daily_records_inserted": 0
         }), 200
 
+    start_sim = time.time()
+
+    all_hourly_data = generate_range_simulation(
+        effective_start,
+        end_date,
+        voltage_profile,
+        zero_event
+    )
+
+    end_sim = time.time()
+
     systems_map = get_systems_map()
     all_hourly_consumption = []
 
-    zero_event = MonthlyZeroConsumptionEvent() 
+    for system_name, consumption, timestamp in all_hourly_data:
+        system_id = systems_map.get(system_name)
+        if system_id:
+            all_hourly_consumption.append((system_id, timestamp, consumption))
 
-    current_date = effective_start
-    while current_date <= end_date:
-
-        daily_data = generate_daily_simulation(
-            simulation_date=current_date,
-            voltage_profile=voltage_profile,
-            zero_event=zero_event
-        )
-
-        for system_name, consumption, timestamp in daily_data:
-            system_id = systems_map.get(system_name)
-            if system_id:
-                all_hourly_consumption.append((system_id, timestamp, consumption))
-
-        current_date += datetime.timedelta(days=1)
+    start_insert = time.time()
 
     insert_hourly_consumption(all_hourly_consumption)
+
+    end_insert = time.time()
+    end_total = time.time()
+
     all_daily_records = build_daily_consumption_records(all_hourly_consumption)
 
     return jsonify({
@@ -115,9 +128,10 @@ def range_simulation():
         "end_date": end_date.isoformat(),
         "effective_start_date": effective_start.isoformat(),
         "hourly_records_inserted": len(all_hourly_consumption),
-        "daily_records_inserted": len(all_daily_records)
+        "daily_records_inserted": len(all_daily_records),
+        "simulation_time_seconds": round(end_sim - start_sim, 4),
+        "insert_time_seconds": round(end_insert - start_insert, 4),
+        "total_time_seconds": round(end_total - start_total, 4)
     }), 200
-
-
 
 

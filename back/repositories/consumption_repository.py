@@ -1,6 +1,8 @@
 
 
 from config.db import conectar_db
+import io
+
 
 def insert_hourly_consumption(records):
 
@@ -10,34 +12,35 @@ def insert_hourly_consumption(records):
     connection = conectar_db()
     cursor = connection.cursor()
 
-    query = """
-        INSERT INTO hourly_consumption (
-        system_id,
-        timestamp, 
-        consumption_kwh
-        )
-        VALUES (%s, %s, %s)
-    """   
+    buffer = io.StringIO()
 
-    cursor.executemany(query, records)
+    for system_id, timestamp, consumption in records:
+        buffer.write(f"{system_id},{timestamp},{consumption}\n")
+
+    buffer.seek(0)
+
+    cursor.execute("""
+        COPY hourly_consumption (system_id, timestamp, consumption_kwh)
+        FROM STDIN WITH (FORMAT CSV)
+    """, stream=buffer)
+
     connection.commit()
 
     cursor.close()
     connection.close()
 
-    print(f"{len(records)} hourly records inserted succesfully")
+    print(f"{len(records)} hourly records inserted via COPY")
 
 def get_latest_consumption_date():
 
     connection = conectar_db()
     cursor = connection.cursor()
 
-    query = """
+    cursor.execute("""
         SELECT MAX(DATE(timestamp))
         FROM hourly_consumption;
-    """
+    """)
 
-    cursor.execute(query)
     result = cursor.fetchone()
 
     cursor.close()
