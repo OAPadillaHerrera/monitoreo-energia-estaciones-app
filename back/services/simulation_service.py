@@ -2,10 +2,6 @@
 
 import datetime
 from systems.system_calculator import SystemCalculator
-from repositories.voltage_repository import insert_hourly_voltage_bulk
-from repositories.system_repository import get_systems_map
-from repositories.system_events_repository import insert_system_events
-from electrical.zero_consumption_events import MonthlyZeroConsumptionEvent
 from schedules.schedule_service import ScheduleService
 
 
@@ -36,7 +32,7 @@ def generate_hourly_consumption(timestamp, zero_event, voltage_120v, voltage_240
         for system_name in system_names
     ]
 
-def generate_daily_simulation(simulation_date, voltage_profile, zero_event):
+def generate_daily_simulation(simulation_date, voltage_profile, zero_event, systems_map):
 
     voltage_profile.generate_daily_profile(simulation_date)
     zero_event.generate_monthly_event_if_needed(simulation_date, voltage_profile)
@@ -48,7 +44,6 @@ def generate_daily_simulation(simulation_date, voltage_profile, zero_event):
     event_records = []
 
     system_names = ScheduleService.get_all_system_names()
-    systems_map = get_systems_map()
 
     for hour in range(24):
         timestamp = base_time.replace(hour=hour)
@@ -65,7 +60,7 @@ def generate_daily_simulation(simulation_date, voltage_profile, zero_event):
             system_id = systems_map.get(zero_event.system_name)
             if system_id:
                 event_records.append(
-                    (timestamp, system_id, MonthlyZeroConsumptionEvent.EVENT_TYPE)
+                    (timestamp, system_id, zero_event.EVENT_TYPE)
                 )
 
         hourly_data = generate_hourly_consumption(
@@ -80,7 +75,7 @@ def generate_daily_simulation(simulation_date, voltage_profile, zero_event):
 
     return daily_data, voltage_records, event_records
 
-def generate_range_simulation(start_date, end_date, voltage_profile, zero_event):
+def generate_range_simulation(start_date, end_date, voltage_profile, zero_event, systems_map):
 
     all_hourly_data = []
     all_voltage_records = []
@@ -94,6 +89,7 @@ def generate_range_simulation(start_date, end_date, voltage_profile, zero_event)
             current_date,
             voltage_profile,
             zero_event,
+            systems_map
         )
 
         all_hourly_data.extend(daily_data)
@@ -102,23 +98,17 @@ def generate_range_simulation(start_date, end_date, voltage_profile, zero_event)
 
         current_date += datetime.timedelta(days=1)
 
-    if all_voltage_records:
-        insert_hourly_voltage_bulk(all_voltage_records)
-
-    if all_event_records:
-        insert_system_events(all_event_records)
-
-    return all_hourly_data
+    return {
+        "hourly_data": all_hourly_data,
+        "voltage_records": all_voltage_records,
+        "event_records": all_event_records
+    }
 
 def calculate_daily_totals(daily_data):
 
     totals = {}
 
     for system_name, consumption, _ in daily_data:
-        if system_name not in totals:
-            totals[system_name] = 0.0
-
-        totals[system_name] += consumption
+        totals[system_name] = totals.get(system_name, 0.0) + consumption
 
     return totals
-
