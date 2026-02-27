@@ -1,6 +1,30 @@
 
 
-SYSTEMS_CONFIG = {
+"""
+Systems Configuration
+
+Defines the static configuration of all systems and their components,
+including nominal energy consumption, schedules, voltage levels,
+and optional duration-based behavior.
+
+This configuration acts as the domain definition layer for
+SystemCalculator and ScheduleService.
+"""
+
+from typing import Dict, TypedDict
+
+class ComponentConfig(TypedDict, total=False):
+    description: str
+    units: int
+    nominal_consumption_kwh: float
+    schedule: str
+    voltage: int
+    duration_hours: float
+
+class SystemConfig(TypedDict):
+    components: Dict[str, ComponentConfig]
+
+SYSTEMS_CONFIG: Dict[str, SystemConfig] = {
     "price_display_system": {
         "components": {
             "main": {
@@ -104,7 +128,7 @@ SYSTEMS_CONFIG = {
             },
             "coffee_machine": {
                 "description": "Coffee machine",
-                "nominal_consumption_kwh": 0.5,  
+                "nominal_consumption_kwh": 0.5,
                 "schedule": "coffee_machine",
                 "voltage": 120,
             },

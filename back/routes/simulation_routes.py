@@ -107,7 +107,7 @@ def range_simulation():
             "status": "ok",
             "start_date": start_date.isoformat(),
             "end_date": end_date.isoformat(),
-            "message": "No days to generate (range already exists in DB).",
+            "message": "No new days generated. The system only inserts records after the latest stored date and does not regenerate previously stored periods.",
             "hourly_records_inserted": 0,
             "daily_records_inserted": 0
         }), 200
